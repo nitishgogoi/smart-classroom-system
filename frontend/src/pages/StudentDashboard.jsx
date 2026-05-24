@@ -93,7 +93,7 @@ const res=
 
 await axios.get(
 
-`http://localhost:5000/api/subjects?branch=${branch}&semester=${semester}`
+`https://smart-classroom-system-23f9.onrender.com/api/subjects?branch=${branch}&semester=${semester}`
 
 );
 
@@ -116,7 +116,7 @@ const res=
 
 await axios.get(
 
-"http://localhost:5000/api/attendance"
+"https://smart-classroom-system-23f9.onrender.com/api/attendance"
 
 );
 

@@ -24,7 +24,7 @@ localStorage.getItem("token");
 const res =
 await axios.get(
 
-"http://localhost:5000/api/assignments",
+"https://smart-classroom-system-23f9.onrender.com/api/assignments",
 
 {
 

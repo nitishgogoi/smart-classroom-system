@@ -33,7 +33,7 @@ localStorage.getItem(
 const res =
 await axios.get(
 
-"http://localhost:5000/api/classes",
+"https://smart-classroom-system-23f9.onrender.com/api/classes",
 
 {
 

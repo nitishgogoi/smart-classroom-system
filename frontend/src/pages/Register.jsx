@@ -66,7 +66,7 @@ form.semester
 
 await axios.post(
 
-"http://localhost:5000/api/auth/register",
+"https://smart-classroom-system-23f9.onrender.com/api/auth/register",
 
 payload
 

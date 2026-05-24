@@ -57,7 +57,7 @@ async()=>{
 const res=
 await axios.get(
 
-"http://localhost:5000/api/users/students"
+"https://smart-classroom-system-23f9.onrender.com/api/users/students"
 
 );
 
@@ -87,7 +87,7 @@ async()=>{
 const res=
 await axios.get(
 
-"http://localhost:5000/api/subjects"
+"https://smart-classroom-system-23f9.onrender.com/api/subjects"
 
 );
 
@@ -122,7 +122,7 @@ status
 
 await axios.post(
 
-"http://localhost:5000/api/attendance",
+"https://smart-classroom-system-23f9.onrender.com/api/attendance",
 
 {
 
