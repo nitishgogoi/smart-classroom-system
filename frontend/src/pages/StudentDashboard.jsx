@@ -3,24 +3,43 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import {
-ResponsiveContainer,
 PieChart,
 Pie,
-Tooltip,
-Cell
+Cell,
+ResponsiveContainer,
+Tooltip
 } from "recharts";
+
+import {
+
+FaBook,
+FaBell,
+FaClipboard,
+FaUserGraduate,
+FaStickyNote,
+FaHome,
+FaSignOutAlt
+
+}
+
+from "react-icons/fa";
 
 export default function StudentDashboard(){
 
-const nav = useNavigate();
+const nav=useNavigate();
 
 const [user,setUser]=useState(null);
 const [subjects,setSubjects]=useState([]);
 const [attendance,setAttendance]=useState([]);
+const [notes,setNotes]=useState([]);
+const [assignments,setAssignments]=useState([]);
+const [notifications,setNotifications]=useState([]);
+
+
 
 useEffect(()=>{
 
-const u =
+const u=
 JSON.parse(
 localStorage.getItem("user")
 );
@@ -34,7 +53,7 @@ return;
 
 setUser(u);
 
-loadData(
+loadAll(
 u.branch,
 u.semester
 );
@@ -43,14 +62,14 @@ u.semester
 
 
 
-async function loadData(
+async function loadAll(
 branch,
 semester
 ){
 
 try{
 
-const sub =
+const sub=
 await axios.get(
 
 `https://smart-classroom-system-23f9.onrender.com/api/subjects?branch=${branch}&semester=${semester}`
@@ -63,14 +82,15 @@ sub.data
 
 
 
-const att =
+const att=
 await axios.get(
 
 "https://smart-classroom-system-23f9.onrender.com/api/attendance"
 
 );
 
-const filtered =
+setAttendance(
+
 att.data.filter(
 
 a=>
@@ -79,10 +99,47 @@ a.branch===branch &&
 
 Number(a.semester)===Number(semester)
 
+)
+
 );
 
-setAttendance(
-filtered
+
+
+const note=
+await axios.get(
+
+"https://smart-classroom-system-23f9.onrender.com/api/notes"
+
+);
+
+setNotes(
+note.data
+);
+
+
+
+const assign=
+await axios.get(
+
+"https://smart-classroom-system-23f9.onrender.com/api/assignments"
+
+);
+
+setAssignments(
+assign.data
+);
+
+
+
+const notify=
+await axios.get(
+
+"https://smart-classroom-system-23f9.onrender.com/api/notifications"
+
+);
+
+setNotifications(
+notify.data
 );
 
 }catch(err){
@@ -95,36 +152,54 @@ console.log(err);
 
 
 
+
 function logout(){
 
 localStorage.clear();
+
 nav("/");
 
 }
 
 
 
-/* overall attendance */
+const totalPresent=
 
-const overallPresent =
 attendance.reduce(
-(s,a)=>s+a.present,
+
+(sum,a)=>
+
+sum+a.present,
+
 0
+
 );
 
-const overallTotal =
+
+
+const totalClasses=
+
 attendance.reduce(
-(s,a)=>s+a.total,
+
+(sum,a)=>
+
+sum+a.total,
+
 0
+
 );
 
-const overallPercent =
 
-overallTotal>0
+
+const overall=
+
+totalClasses
 
 ?
 
-(overallPresent/overallTotal)*100
+(totalPresent/totalClasses)
+
+*100
 
 :
 
@@ -132,73 +207,268 @@ overallTotal>0
 
 
 
-/* SUBJECT PIE */
+const pieData=
 
-const pieData =
+attendance.map(
 
-attendance.map(a=>({
-
+a=>({
 name:a.subject,
 
 value:
 
 Math.round(
-(a.present/a.total)*100
+
+(a.present/a.total)
+
+*100
+
 )
 
-}));
+})
+
+);
+
+
 
 
 
 return(
 
-<div className="bg-slate-950 text-white flex min-h-screen">
+<div className="
+
+flex
+min-h-screen
+
+bg-slate-950
+text-white
+
+">
 
 
-{/* sidebar */}
 
-<div className="w-64 bg-slate-900 p-6">
+{/* SIDEBAR */}
 
-<h1 className="text-3xl">
 
-🏫
+
+<div className="
+
+w-64
+bg-slate-900
+
+p-6
+
+shadow-2xl
+
+sticky
+top-0
+
+h-screen
+
+">
+
+<h1 className="
+
+text-3xl
+font-bold
+
+mb-12
+
+">
+
+🏫 Smart
 
 </h1>
 
-<div className="space-y-8 mt-10">
+
+
+<div className="space-y-6">
+
 
 <button
+
 onClick={()=>
+
 document
-.getElementById("subjects")
-.scrollIntoView()
-}
->
-📚 Subjects
-</button>
 
-<button
-onClick={()=>
-document
-.getElementById("attendance")
-.scrollIntoView()
-}
->
-📊 Attendance
-</button>
+.getElementById(
 
-<button
-onClick={()=>
-window.scrollTo(
-0,
-document.body.scrollHeight
+"subjects"
+
 )
+
+.scrollIntoView()
+
 }
+
+className="
+
+flex
+items-center
+gap-3
+
+hover:text-blue-400
+
+"
+
 >
-📝 Bottom
+
+<FaBook/>
+
+Subjects
+
 </button>
+
+
+
+<button
+
+onClick={()=>
+
+document
+
+.getElementById(
+
+"notes"
+
+)
+
+.scrollIntoView()
+
+}
+
+className="
+
+flex
+items-center
+gap-3
+
+hover:text-yellow-400
+
+"
+
+>
+
+<FaStickyNote/>
+
+Notes
+
+</button>
+
+
+
+
+<button
+
+onClick={()=>
+
+document
+
+.getElementById(
+
+"assignments"
+
+)
+
+.scrollIntoView()
+
+}
+
+className="
+
+flex
+items-center
+gap-3
+
+hover:text-green-400
+
+"
+
+>
+
+<FaClipboard/>
+
+Assignments
+
+</button>
+
+
+
+
+<button
+
+onClick={()=>
+
+document
+
+.getElementById(
+
+"grades"
+
+)
+
+.scrollIntoView()
+
+}
+
+className="
+
+flex
+items-center
+gap-3
+
+hover:text-orange-400
+
+"
+
+>
+
+<FaUserGraduate/>
+
+Grades
+
+</button>
+
+
+
+
+<button
+
+onClick={()=>
+
+document
+
+.getElementById(
+
+"notifications"
+
+)
+
+.scrollIntoView()
+
+}
+
+className="
+
+flex
+items-center
+gap-3
+
+hover:text-purple-400
+
+"
+
+>
+
+<FaBell/>
+
+Notifications
+
+</button>
+
+
 
 </div>
+
 
 
 <button
@@ -207,15 +477,26 @@ onClick={logout}
 
 className="
 
+absolute
+
+bottom-10
+
 bg-red-500
+
 px-5
 py-3
-rounded
-mt-20
+
+rounded-xl
+
+flex
+items-center
+gap-2
 
 "
 
 >
+
+<FaSignOutAlt/>
 
 Logout
 
@@ -226,7 +507,10 @@ Logout
 
 
 
-{/* main */}
+
+{/* MAIN */}
+
+
 
 <div className="flex-1 p-10">
 
@@ -236,24 +520,25 @@ Student Dashboard
 
 </h1>
 
-<p className="mt-2">
+
+<div className="mt-3">
 
 {user?.branch}
 
 Semester {user?.semester}
 
-</p>
+</div>
 
 
 
-<div className="grid grid-cols-2 gap-8 mt-10">
 
+<div className="grid grid-cols-2 gap-10 mt-10">
 
-<div className="bg-slate-900 p-10 rounded">
+<div className="bg-slate-900 p-10 rounded-3xl">
 
 <h2>
 
-Overall Attendance
+Attendance
 
 </h2>
 
@@ -262,7 +547,9 @@ Overall Attendance
 {
 
 Math.round(
-overallPercent
+
+overall
+
 )
 
 }%
@@ -273,12 +560,11 @@ overallPercent
 
 
 
-
-<div className="bg-slate-900 p-10 rounded">
+<div className="bg-slate-900 p-10 rounded-3xl">
 
 <ResponsiveContainer
 width="100%"
-height={300}
+height={250}
 >
 
 <PieChart>
@@ -288,8 +574,6 @@ height={300}
 data={pieData}
 
 dataKey="value"
-
-nameKey="name"
 
 label
 
@@ -310,10 +594,9 @@ fill={[
 "#22c55e",
 "#3b82f6",
 "#ef4444",
-"#eab308",
-"#8b5cf6"
+"#eab308"
 
-][i%5]}
+][i%4]}
 
 />
 
@@ -335,21 +618,81 @@ fill={[
 
 
 
-{/* subjects */}
 
-<div
+{/* QUICK BUTTONS */}
 
-id="subjects"
 
-className="
 
-bg-slate-900
-rounded
-p-10
+<div className="
+
+grid
+grid-cols-4
+
+gap-5
+
 mt-10
 
-"
+">
 
+<button
+onClick={()=>
+document.getElementById("subjects")
+.scrollIntoView()
+}
+className="bg-blue-600 p-6 rounded-xl">
+
+Subjects
+
+</button>
+
+
+<button
+onClick={()=>
+document.getElementById("assignments")
+.scrollIntoView()
+}
+className="bg-green-600 p-6 rounded-xl">
+
+Assignments
+
+</button>
+
+
+<button
+onClick={()=>
+document.getElementById("notifications")
+.scrollIntoView()
+}
+className="bg-purple-600 p-6 rounded-xl">
+
+Notifications
+
+</button>
+
+
+<button
+onClick={()=>
+document.getElementById("grades")
+.scrollIntoView()
+}
+className="bg-orange-600 p-6 rounded-xl">
+
+Grades
+
+</button>
+
+</div>
+
+
+
+
+{/* SUBJECTS */}
+
+
+
+<section
+id="subjects"
+className="mt-12"
 >
 
 <h1 className="text-4xl">
@@ -358,7 +701,6 @@ Subjects
 
 </h1>
 
-
 {
 
 subjects.map(
@@ -366,19 +708,8 @@ subjects.map(
 s=>
 
 <div
-
 key={s._id}
-
-className="
-
-bg-slate-800
-p-5
-rounded
-mt-4
-
-"
-
->
+className="bg-slate-900 p-5 mt-5 rounded">
 
 {s.code}
 
@@ -392,99 +723,33 @@ mt-4
 
 }
 
-</div>
+</section>
 
 
 
 
-{/* attendance */}
-
-<div
-
-id="attendance"
-
-className="
-
-bg-slate-900
-rounded
-p-10
-mt-10
-
-"
-
+<section
+id="notes"
+className="mt-12"
 >
 
 <h1 className="text-4xl">
 
-Subject Attendance
+Notes
 
 </h1>
 
-
 {
 
-attendance.map(
+notes.map(
 
-a=>
-
-<div
-
-key={a._id}
-
-className="
-
-bg-slate-800
-p-5
-rounded
-mt-5
-
-"
-
->
-
-<h2>
-
-{a.subject}
-
-</h2>
-
-
-<p>
-
-{a.present}
-
-/
-
-{a.total}
-
-</p>
-
-
-<div className="bg-gray-700 h-3 rounded">
+n=>
 
 <div
+key={n._id}
+className="bg-slate-900 p-5 mt-5 rounded">
 
-className="h-3 bg-green-500 rounded"
-
-style={{
-
-width:
-
-`${
-
-(a.present/a.total)
-
-*100
-
-}%`
-
-}}
-
->
-
-</div>
-
-</div>
+{n.title}
 
 </div>
 
@@ -492,7 +757,78 @@ width:
 
 }
 
+</section>
+
+
+
+
+
+<section
+id="assignments"
+className="mt-12"
+>
+
+<h1 className="text-4xl">
+
+Assignments
+
+</h1>
+
+{
+
+assignments.map(
+
+a=>
+
+<div
+key={a._id}
+className="bg-slate-900 p-5 mt-5 rounded">
+
+{a.title}
+
 </div>
+
+)
+
+}
+
+</section>
+
+
+
+
+
+<section
+id="notifications"
+className="mt-12"
+>
+
+<h1 className="text-4xl">
+
+Notifications
+
+</h1>
+
+{
+
+notifications.map(
+
+n=>
+
+<div
+key={n._id}
+className="bg-slate-900 p-5 mt-5 rounded">
+
+{n.message}
+
+</div>
+
+)
+
+}
+
+</section>
+
 
 
 </div>
