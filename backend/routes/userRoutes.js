@@ -9,20 +9,29 @@ require("../models/User");
 
 
 
-// all users
+/* -------------------
+GET ALL USERS
+/api/users
+------------------- */
 
 router.get(
 
-"/all",
+"/",
 
 async(req,res)=>{
 
 try{
 
-const users =
-await User.find();
+const users=
 
-res.json(users);
+await User.find()
+
+.select("-password");
+
+
+res.json(
+users
+);
 
 }
 
@@ -39,7 +48,11 @@ res.status(500)
 
 
 
-// students
+
+/* -------------------
+GET STUDENTS
+/api/users/students
+------------------- */
 
 router.get(
 
@@ -49,14 +62,20 @@ async(req,res)=>{
 
 try{
 
-const users =
+const students=
+
 await User.find({
 
 role:"student"
 
-});
+})
 
-res.json(users);
+.select("-password");
+
+
+res.json(
+students
+);
 
 }
 
@@ -73,7 +92,12 @@ res.status(500)
 
 
 
-// teachers
+
+
+/* -------------------
+GET TEACHERS
+/api/users/teachers
+------------------- */
 
 router.get(
 
@@ -83,14 +107,20 @@ async(req,res)=>{
 
 try{
 
-const users =
+const teachers=
+
 await User.find({
 
 role:"teacher"
 
-});
+})
 
-res.json(users);
+.select("-password");
+
+
+res.json(
+teachers
+);
 
 }
 
@@ -104,6 +134,8 @@ res.status(500)
 }
 
 );
+
+
 
 
 
