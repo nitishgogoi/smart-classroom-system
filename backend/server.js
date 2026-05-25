@@ -1,44 +1,18 @@
-const express =
-require("express");
-
-const userRoutes =
-require("./routes/userRoutes");
-
-const assignmentRoutes =
-require(
-"./routes/assignmentRoutes"
-);
-
-const submissionRoutes =
-require(
-"./routes/submissionRoutes"
-);
-
-const attendanceRoutes=
-require(
-"./routes/attendanceRoutes"
-);
-
-const cors =
-require("cors");
-
-const noteRoutes =
-require("./routes/noteRoutes");
+const express = require("express");
+const cors = require("cors");
+require("dotenv").config();
 
 const connectDB =
 require("./config/db");
-
-require("dotenv")
-.config();
 
 connectDB();
 
 const app =
 express();
 
-app.get("/", (req,res)=>{
-   res.send("Backend Running");
-});
+
+
+/* ---------- MIDDLEWARE ---------- */
 
 app.use(
 express.json()
@@ -48,73 +22,98 @@ app.use(
 cors()
 );
 
-app.use(
-"/api/notes",
-noteRoutes
+
+
+/* ---------- TEST ---------- */
+
+app.get("/",(req,res)=>{
+
+res.send(
+"Backend Running"
 );
 
+});
+
+
+
+/* ---------- ROUTES ---------- */
 
 app.use(
 "/api/auth",
 require("./routes/authRoutes")
 );
 
-app.use(
-"/api/submissions",
-submissionRoutes
-);
 
 app.use(
-"/api/grades",
-require("./routes/gradeRoutes")
-);
-
-app.use(
-"/api/notes",
-require("./routes/noteRoutes")
-);
-
-app.use(
-
 "/api/users",
-
-userRoutes
-
+require("./routes/userRoutes")
 );
+
 
 app.use(
 "/api/attendance",
 require("./routes/attendanceRoutes")
 );
 
-app.use(
 
+app.use(
 "/api/assignments",
-
-assignmentRoutes
-
+require("./routes/assignmentRoutes")
 );
+
 
 app.use(
-
-"/api/subjects",
-
-require(
-"./routes/subjectRoutes"
-)
-
+"/api/submissions",
+require("./routes/submissionRoutes")
 );
+
+
+app.use(
+"/api/grades",
+require("./routes/gradeRoutes")
+);
+
+
+app.use(
+"/api/notes",
+require("./routes/noteRoutes")
+);
+
+
+app.use(
+"/api/subjects",
+require("./routes/subjectRoutes")
+);
+
+
+
+/* ---------- NEW TEACHER ROUTES ---------- */
+
+app.use(
+"/api/teacher",
+require("./routes/teacherRoutes")
+);
+
+
+
+/* ---------- SERVER ---------- */
+
+const PORT=
+
+process.env.PORT
+||
+5000;
 
 
 app.listen(
 
-process.env.PORT,
+PORT,
 
 ()=>{
 
 console.log(
 
-`Server running on ${process.env.PORT}`
+`Server running on ${PORT}`
 
 );
 

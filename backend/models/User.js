@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-
+const userSchema = new mongoose.Schema(
+{
 name:{
 type:String,
 required:true
@@ -20,34 +20,32 @@ required:true
 
 role:{
 type:String,
-enum:["student","teacher","admin"],
 default:"student"
 },
 
 branch:{
 type:String,
-enum:[
-"Computer Engineering",
-"Printing Technology",
-"Electrical Engineering"
-],
-default:null
+default:""
 },
 
 semester:{
 type:Number,
-min:1,
-max:6,
-default:null
-}
+default:1
+},
+
+phone:String,
+
+gender:String
 
 },
+
 {
 timestamps:true
-});
+}
 
-module.exports =
-mongoose.model(
+);
+
+export default mongoose.model(
 "User",
 userSchema
 );
