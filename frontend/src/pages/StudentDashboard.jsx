@@ -1,69 +1,45 @@
-import {
-useEffect,
-useState
-}
-from "react";
-
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 import {
-
 PieChart,
 Pie,
 Cell,
-ResponsiveContainer
-
-}
-
-from "recharts";
+ResponsiveContainer,
+Tooltip
+} from "recharts";
 
 import {
-
 FaBook,
 FaBell,
 FaClipboard,
 FaUserGraduate
+} from "react-icons/fa";
 
-}
-
-from "react-icons/fa";
-
-import {
-useNavigate
-}
-from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 
 export default function StudentDashboard(){
 
-const nav=
-useNavigate();
+const nav = useNavigate();
 
-
-const [subjects,setSubjects]=
-useState([]);
-
-const [attendance,
-setAttendance]=
-useState([]);
-
-const [user,
-setUser]=
-useState(null);
-
+const [subjects,setSubjects] = useState([]);
+const [attendance,setAttendance] = useState([]);
+const [user,setUser] = useState(null);
 
 
 useEffect(()=>{
 
-const u=
-
+const u =
 JSON.parse(
-
-localStorage.getItem(
-"user"
-)
-
+localStorage.getItem("user")
 );
+
+if(!u){
+
+nav("/");
+return;
+
+}
 
 setUser(u);
 
@@ -81,64 +57,65 @@ u.semester
 
 
 
-
 async function loadSubjects(
-
 branch,
 semester
-
 ){
 
-const res=
+try{
 
+const res =
 await axios.get(
 
 `https://smart-classroom-system-23f9.onrender.com/api/subjects?branch=${branch}&semester=${semester}`
 
 );
 
-setSubjects(
-res.data
-);
+setSubjects(res.data);
+
+}catch(err){
+
+console.log(err);
+
+}
 
 }
 
 
 
 async function loadAttendance(
-
 branch,
 semester
-
 ){
 
-const res=
+try{
 
+const res =
 await axios.get(
 
 "https://smart-classroom-system-23f9.onrender.com/api/attendance"
 
 );
 
-
-const filtered=
-
+const filtered =
 res.data.filter(
 
 a=>
 
-a.branch===branch
+a.branch === branch &&
 
-&&
-
-a.semester===semester
+Number(a.semester) ===
+Number(semester)
 
 );
 
+setAttendance(filtered);
 
-setAttendance(
-filtered
-);
+}catch(err){
+
+console.log(err);
+
+}
 
 }
 
@@ -156,65 +133,65 @@ nav("/");
 
 const totalPresent =
 attendance.reduce(
+
 (sum,a)=>
+
 sum + Number(a.present),
+
 0
+
 );
+
+
 
 const totalClasses =
 attendance.reduce(
+
 (sum,a)=>
+
 sum + Number(a.total),
+
 0
+
 );
 
+
+
 const totalAttendance =
+
 totalClasses > 0
+
 ?
+
 (totalPresent/totalClasses)*100
+
 :
+
 0;
 
 
 
-const chart=[
+const chart =
 
-{
+attendance.map(a=>({
 
-name:"Present",
-
-value:
-
-totalAttendance
-
-},
-
-{
-
-name:"Absent",
+name:a.subject,
 
 value:
 
-100-totalAttendance
+Math.round(
 
-}
+(a.present/a.total)*100
 
-];
+)
 
+}));
 
 
 
 return(
 
-<div className="
-
-bg-slate-950
-text-white
-min-h-screen
-flex
-
-">
-
+<div className="bg-slate-950 text-white min-h-screen flex">
 
 
 {/* SIDEBAR */}
@@ -224,47 +201,102 @@ flex
 
 w-24
 hover:w-72
-
 transition-all
 
 bg-slate-900
-
 h-screen
-
 p-6
 
 overflow-hidden
 
 ">
 
-<h1 className="
-
-text-4xl
-font-bold
-
-">
+<h1 className="text-4xl font-bold">
 
 🏫
 
 </h1>
 
 
-<div className="
 
-mt-12
-space-y-8
+<div className="mt-12 space-y-8">
 
-">
 
-<p>📚 Subjects</p>
+<button
 
-<p>📝 Notes</p>
+onClick={()=>{
 
-<p>📂 Assignments</p>
+document
+.getElementById(
+"subjects"
+)
+.scrollIntoView();
 
-<p>📊 Grades</p>
+}}
 
-<p>🔔 Notifications</p>
+>
+
+📚 Subjects
+
+</button>
+
+
+
+<button
+
+onClick={()=>nav("/notes")}
+
+>
+
+📝 Notes
+
+</button>
+
+
+
+<button
+
+onClick={()=>
+
+nav("/assignments")
+
+}
+
+>
+
+📂 Assignments
+
+</button>
+
+
+
+<button
+
+onClick={()=>nav("/grades")}
+
+>
+
+📊 Grades
+
+</button>
+
+
+
+<button
+
+onClick={()=>
+
+nav("/notifications")
+
+}
+
+>
+
+🔔 Notifications
+
+</button>
+
+
 
 </div>
 
@@ -297,28 +329,16 @@ Logout
 
 
 
+
 {/* MAIN */}
 
 
 
-<div className="
-
-flex-1
-p-10
-
-space-y-10
-
-">
+<div className="flex-1 p-10 space-y-10">
 
 
+<div className="flex justify-between">
 
-
-<div className="
-
-flex
-justify-between
-
-">
 
 <h1 className="
 
@@ -336,8 +356,8 @@ Student Dashboard
 <div className="
 
 bg-slate-900
-
 p-5
+
 rounded-xl
 
 ">
@@ -351,9 +371,7 @@ rounded-xl
 
 <p>
 
-Semester
-
-{user?.semester}
+Semester {user?.semester}
 
 </p>
 
@@ -369,13 +387,8 @@ Semester
 
 
 
-<div className="
+<div className="grid grid-cols-2 gap-10">
 
-grid
-grid-cols-2
-gap-10
-
-">
 
 <div className="
 
@@ -386,21 +399,19 @@ p-10
 
 ">
 
-<h2 className="
-
-text-4xl
-
-">
+<h2 className="text-4xl">
 
 Attendance
 
 </h2>
 
 
+
 <h1 className="
 
 text-7xl
 font-bold
+
 mt-5
 
 ">
@@ -408,14 +419,13 @@ mt-5
 {
 
 Math.round(
-
 totalAttendance
-
 )
 
 }%
 
 </h1>
+
 
 
 <p>
@@ -425,6 +435,7 @@ Overall Attendance
 </p>
 
 </div>
+
 
 
 
@@ -439,6 +450,7 @@ p-10
 ">
 
 <ResponsiveContainer
+
 width="100%"
 height={250}
 
@@ -452,15 +464,45 @@ data={chart}
 
 dataKey="value"
 
+nameKey="name"
+
 outerRadius={90}
+
+label
 
 >
 
-<Cell fill="#22c55e"/>
+{
 
-<Cell fill="#ef4444"/>
+chart.map(
+
+(c,i)=>(
+
+<Cell
+
+key={i}
+
+fill={[
+
+"#22c55e",
+"#3b82f6",
+"#f59e0b",
+"#ef4444",
+"#8b5cf6"
+
+][i%5]}
+
+/>
+
+)
+
+)
+
+}
 
 </Pie>
+
+<Tooltip/>
 
 </PieChart>
 
@@ -479,21 +521,32 @@ outerRadius={90}
 
 
 
-<div className="
+<div className="grid grid-cols-4 gap-5">
 
-grid
-grid-cols-4
-gap-5
 
-">
+<div
 
-<div className="
+onClick={()=>
+
+document
+.getElementById(
+"subjects"
+)
+.scrollIntoView()
+
+}
+
+className="
 
 bg-blue-600
 p-6
 rounded-xl
 
-">
+cursor-pointer
+
+"
+
+>
 
 <FaBook/>
 
@@ -503,13 +556,27 @@ Subjects
 
 
 
-<div className="
+
+
+<div
+
+onClick={()=>
+
+nav("/assignments")
+
+}
+
+className="
 
 bg-green-600
 p-6
 rounded-xl
 
-">
+cursor-pointer
+
+"
+
+>
 
 <FaClipboard/>
 
@@ -519,13 +586,26 @@ Assignments
 
 
 
-<div className="
+
+<div
+
+onClick={()=>
+
+nav("/notifications")
+
+}
+
+className="
 
 bg-purple-600
 p-6
 rounded-xl
 
-">
+cursor-pointer
+
+"
+
+>
 
 <FaBell/>
 
@@ -535,13 +615,26 @@ Notifications
 
 
 
-<div className="
+
+<div
+
+onClick={()=>
+
+nav("/grades")
+
+}
+
+className="
 
 bg-orange-600
 p-6
 rounded-xl
 
-">
+cursor-pointer
+
+"
+
+>
 
 <FaUserGraduate/>
 
@@ -560,7 +653,11 @@ Grades
 
 
 
-<div className="
+<div
+
+id="subjects"
+
+className="
 
 bg-slate-900
 
@@ -609,7 +706,6 @@ rounded-xl
 {s.code}
 
 </p>
-
 
 <h2>
 
@@ -688,32 +784,38 @@ rounded-xl
 </h2>
 
 
+
 <p>
 
 Present:
 
-{a.present}
-
-/
-
-{a.total}
+{a.present}/{a.total}
 
 </p>
+
 
 
 <p>
+
 {
+
 Math.round(
+
 (a.present/a.total)*100
+
 )
+
 }%
+
 </p>
+
 
 
 
 <div className="
 
 bg-slate-700
+
 h-3
 rounded
 
@@ -731,18 +833,28 @@ rounded
 style={{
 
 width:
+
 `${Math.round(
+
 (a.present/a.total)*100
+
 )}%`,
+
 
 background:
 
 (
+
 (a.present/a.total)*100
+
 )<75
+
 ?
+
 "red"
+
 :
+
 "green"
 
 }}
@@ -752,7 +864,6 @@ background:
 </div>
 
 </div>
-
 
 </div>
 
@@ -766,11 +877,10 @@ background:
 
 
 
-
 </div>
 
 </div>
 
-)
+);
 
 }
