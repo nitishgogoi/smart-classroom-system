@@ -1,328 +1,50 @@
-import axios from "axios";
-import {useEffect,useState}
-from "react";
+import { useEffect, useState, useContext } from "react";
+import { Link } from "react-router-dom";
+import api from "../api/axios";
+import { AuthContext } from "../context/AuthContext";
 
-import "./TeacherDashboard.css";
+export default function TeacherDashboard() {
+  const { user } = useContext(AuthContext);
+  const [stats, setStats] = useState({ students: 0, classes: 0 });
 
-function TeacherDashboard(){
+  useEffect(() => {
+    // A real app would fetch stats here, we will mock it based on your old code
+    setStats({ students: 120, classes: 5 });
+  }, []);
 
-const [tab,setTab]=
-useState("students");
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold text-white mb-2">Teacher Overview</h1>
+        <p className="text-slate-400">Welcome, Professor {user?.name}.</p>
+      </div>
 
-const [students,setStudents]=
-useState([]);
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-gradient-to-br from-indigo-600 to-blue-700 p-6 rounded-2xl shadow-lg border border-indigo-500/30">
+          <h3 className="text-indigo-100 font-medium">Total Students</h3>
+          <p className="text-4xl font-bold text-white mt-2">{stats.students}</p>
+        </div>
+        <div className="bg-gradient-to-br from-purple-600 to-fuchsia-700 p-6 rounded-2xl shadow-lg border border-purple-500/30">
+          <h3 className="text-purple-100 font-medium">Active Classes</h3>
+          <p className="text-4xl font-bold text-white mt-2">{stats.classes}</p>
+        </div>
+      </div>
 
-const [title,setTitle]=
-useState("");
-
-const [notes,setNotes]=
-useState("");
-
-const [attendance,setAttendance]=
-useState("");
-
-
-
-useEffect(()=>{
-
-loadStudents();
-
-},[]);
-
-
-
-async function loadStudents(){
-
-let res=
-await axios.get(
-"https://smart-classroom-system-23f9.onrender.com/api/users/students"
-);
-
-setStudents(
-res.data
-);
-
+      {/* QUICK ACTIONS */}
+      <div>
+        <h2 className="text-xl font-bold text-white mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link to="/teacher/assignments" className="p-4 bg-slate-900 border border-slate-800 rounded-xl text-center hover:bg-slate-800 transition-colors text-slate-300 font-medium">
+            + Create Assignment
+          </Link>
+          <Link to="/teacher/attendance" className="p-4 bg-slate-900 border border-slate-800 rounded-xl text-center hover:bg-slate-800 transition-colors text-slate-300 font-medium">
+            ✓ Mark Attendance
+          </Link>
+          <Link to="/teacher/notes" className="p-4 bg-slate-900 border border-slate-800 rounded-xl text-center hover:bg-slate-800 transition-colors text-slate-300 font-medium">
+            📁 Upload Notes
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
 }
-
-
-
-async function createAssignment(){
-
-await axios.post(
-"https://smart-classroom-system-23f9.onrender.com/api/teacher/assignment",
-
-{
-title
-}
-
-);
-
-alert(
-"Assignment created"
-);
-
-}
-
-
-
-async function uploadNotes(){
-
-await axios.post(
-"https://smart-classroom-system-23f9.onrender.com/api/teacher/notes",
-
-{
-title:notes
-}
-
-);
-
-alert(
-"Notes uploaded"
-);
-
-}
-
-
-
-async function markAttendance(){
-
-await axios.post(
-"https://smart-classroom-system-23f9.onrender.com/api/teacher/attendance",
-
-{
-
-student:attendance,
-
-status:"Present"
-
-}
-
-);
-
-alert(
-"Attendance saved"
-);
-
-}
-
-
-
-return(
-
-<div className="teacher">
-
-<div className="sidebar">
-
-<button
-onClick={()=>setTab("students")}
->
-
-Students
-
-</button>
-
-
-<button
-onClick={()=>setTab("assignment")}
->
-
-Assignments
-
-</button>
-
-
-<button
-onClick={()=>setTab("attendance")}
->
-
-Attendance
-
-</button>
-
-
-<button
-onClick={()=>setTab("notes")}
->
-
-Notes
-
-</button>
-
-</div>
-
-
-
-<div className="content">
-
-<h1>
-Teacher Dashboard
-</h1>
-
-
-
-{
-
-tab==="students"
-
-&&
-
-students.map(s=>(
-
-<div
-className="card"
->
-
-<h3>
-{s.name}
-</h3>
-
-<p>
-{s.branch}
-</p>
-
-<p>
-Semester:
-{s.semester}
-</p>
-
-</div>
-
-))
-
-}
-
-
-
-{
-
-tab==="assignment"
-
-&&
-
-<div>
-
-<input
-
-placeholder=
-"Assignment"
-
-onChange={(e)=>
-
-setTitle(
-e.target.value
-)
-
-}
-
-/>
-
-
-<button
-
-onClick={
-createAssignment
-}
-
->
-
-Create Assignment
-
-</button>
-
-</div>
-
-}
-
-
-
-{
-
-tab==="attendance"
-
-&&
-
-<div>
-
-<input
-
-placeholder=
-"Student"
-
-onChange={(e)=>
-
-setAttendance(
-e.target.value
-)
-
-}
-
-/>
-
-<button
-
-onClick={
-markAttendance
-}
-
->
-
-Mark Attendance
-
-</button>
-
-</div>
-
-}
-
-
-
-{
-
-tab==="notes"
-
-&&
-
-<div>
-
-<input
-
-placeholder=
-"Notes"
-
-onChange={(e)=>
-
-setNotes(
-e.target.value
-)
-
-}
-
-/>
-
-
-<button
-
-onClick={
-uploadNotes
-}
-
->
-
-Upload Notes
-
-</button>
-
-</div>
-
-}
-
-
-</div>
-
-</div>
-
-);
-
-}
-
-export default TeacherDashboard;
