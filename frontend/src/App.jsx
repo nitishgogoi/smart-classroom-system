@@ -4,6 +4,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardLayout from "./layouts/DashboardLayout";
 
 // Public Pages
+import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 
@@ -20,14 +21,16 @@ import UploadNotes from "./pages/UploadNotes";
 import StudentAssignments from "./pages/StudentAssignments";
 import Attendance from "./pages/Attendance";
 import Grades from "./pages/Grades";
-import TeacherStudents from "./pages/TeacherStudents"; // <-- NEW IMPORT
+import TeacherStudents from "./pages/TeacherStudents";
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<Login />} />
+          {/* 🌟 FIXED PUBLIC ROUTES 🌟 */}
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
           {/* 🎓 STUDENT ROUTES */}
@@ -55,7 +58,7 @@ function App() {
             <Route path="notes" element={<Notes />} />
             <Route path="upload-notes" element={<UploadNotes />} />
             <Route path="submissions" element={<Submissions />} />
-            <Route path="students" element={<TeacherStudents />} /> {/* <-- NEW ROUTE */}
+            <Route path="students" element={<TeacherStudents />} />
           </Route>
         </Routes>
       </AuthProvider>
@@ -63,4 +66,4 @@ function App() {
   );
 }
 
-export default App; 
+export default App;
