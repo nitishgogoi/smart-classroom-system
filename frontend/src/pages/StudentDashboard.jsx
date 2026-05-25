@@ -1,31 +1,22 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 import {
+ResponsiveContainer,
 PieChart,
 Pie,
-Cell,
-ResponsiveContainer,
-Tooltip
+Tooltip,
+Cell
 } from "recharts";
-
-import {
-FaBook,
-FaBell,
-FaClipboard,
-FaUserGraduate
-} from "react-icons/fa";
-
-import { useNavigate } from "react-router-dom";
 
 export default function StudentDashboard(){
 
 const nav = useNavigate();
 
-const [subjects,setSubjects] = useState([]);
-const [attendance,setAttendance] = useState([]);
-const [user,setUser] = useState(null);
-
+const [user,setUser]=useState(null);
+const [subjects,setSubjects]=useState([]);
+const [attendance,setAttendance]=useState([]);
 
 useEffect(()=>{
 
@@ -43,12 +34,7 @@ return;
 
 setUser(u);
 
-loadSubjects(
-u.branch,
-u.semester
-);
-
-loadAttendance(
+loadData(
 u.branch,
 u.semester
 );
@@ -57,40 +43,27 @@ u.semester
 
 
 
-async function loadSubjects(
+async function loadData(
 branch,
 semester
 ){
 
 try{
 
-const res =
+const sub =
 await axios.get(
 
 `https://smart-classroom-system-23f9.onrender.com/api/subjects?branch=${branch}&semester=${semester}`
 
 );
 
-setSubjects(res.data);
-
-}catch(err){
-
-console.log(err);
-
-}
-
-}
+setSubjects(
+sub.data
+);
 
 
 
-async function loadAttendance(
-branch,
-semester
-){
-
-try{
-
-const res =
+const att =
 await axios.get(
 
 "https://smart-classroom-system-23f9.onrender.com/api/attendance"
@@ -98,18 +71,19 @@ await axios.get(
 );
 
 const filtered =
-res.data.filter(
+att.data.filter(
 
 a=>
 
-a.branch === branch &&
+a.branch===branch &&
 
-Number(a.semester) ===
-Number(semester)
+Number(a.semester)===Number(semester)
 
 );
 
-setAttendance(filtered);
+setAttendance(
+filtered
+);
 
 }catch(err){
 
@@ -124,46 +98,33 @@ console.log(err);
 function logout(){
 
 localStorage.clear();
-
 nav("/");
 
 }
 
 
 
-const totalPresent =
+/* overall attendance */
+
+const overallPresent =
 attendance.reduce(
-
-(sum,a)=>
-
-sum + Number(a.present),
-
+(s,a)=>s+a.present,
 0
-
 );
 
-
-
-const totalClasses =
+const overallTotal =
 attendance.reduce(
-
-(sum,a)=>
-
-sum + Number(a.total),
-
+(s,a)=>s+a.total,
 0
-
 );
 
+const overallPercent =
 
-
-const totalAttendance =
-
-totalClasses > 0
+overallTotal>0
 
 ?
 
-(totalPresent/totalClasses)*100
+(overallPresent/overallTotal)*100
 
 :
 
@@ -171,7 +132,9 @@ totalClasses > 0
 
 
 
-const chart =
+/* SUBJECT PIE */
+
+const pieData =
 
 attendance.map(a=>({
 
@@ -180,9 +143,7 @@ name:a.subject,
 value:
 
 Math.round(
-
 (a.present/a.total)*100
-
 )
 
 }));
@@ -191,115 +152,53 @@ Math.round(
 
 return(
 
-<div className="bg-slate-950 text-white min-h-screen flex">
+<div className="bg-slate-950 text-white flex min-h-screen">
 
 
-{/* SIDEBAR */}
+{/* sidebar */}
 
+<div className="w-64 bg-slate-900 p-6">
 
-<div className="
-
-w-24
-hover:w-72
-transition-all
-
-bg-slate-900
-h-screen
-p-6
-
-overflow-hidden
-
-">
-
-<h1 className="text-4xl font-bold">
+<h1 className="text-3xl">
 
 🏫
 
 </h1>
 
-
-
-<div className="mt-12 space-y-8">
-
+<div className="space-y-8 mt-10">
 
 <button
-
-onClick={()=>{
-
+onClick={()=>
 document
-.getElementById(
-"subjects"
-)
-.scrollIntoView();
-
-}}
-
+.getElementById("subjects")
+.scrollIntoView()
+}
 >
-
 📚 Subjects
-
 </button>
 
-
-
 <button
-
-onClick={()=>nav("/notes")}
-
->
-
-📝 Notes
-
-</button>
-
-
-
-<button
-
 onClick={()=>
-
-nav("/assignments")
-
+document
+.getElementById("attendance")
+.scrollIntoView()
 }
-
 >
-
-📂 Assignments
-
+📊 Attendance
 </button>
 
-
-
 <button
-
-onClick={()=>nav("/grades")}
-
->
-
-📊 Grades
-
-</button>
-
-
-
-<button
-
 onClick={()=>
-
-nav("/notifications")
-
+window.scrollTo(
+0,
+document.body.scrollHeight
+)
 }
-
 >
-
-🔔 Notifications
-
+📝 Bottom
 </button>
-
-
 
 </div>
-
 
 
 <button
@@ -308,13 +207,11 @@ onClick={logout}
 
 className="
 
-mt-20
 bg-red-500
-
 px-5
 py-3
-
-rounded-xl
+rounded
+mt-20
 
 "
 
@@ -329,144 +226,70 @@ Logout
 
 
 
+{/* main */}
 
-{/* MAIN */}
+<div className="flex-1 p-10">
 
-
-
-<div className="flex-1 p-10 space-y-10">
-
-
-<div className="flex justify-between">
-
-
-<h1 className="
-
-text-6xl
-font-bold
-
-">
+<h1 className="text-6xl font-bold">
 
 Student Dashboard
 
 </h1>
 
-
-
-<div className="
-
-bg-slate-900
-p-5
-
-rounded-xl
-
-">
-
-<h3>
+<p className="mt-2">
 
 {user?.branch}
-
-</h3>
-
-
-<p>
 
 Semester {user?.semester}
 
 </p>
 
-</div>
-
-</div>
 
 
+<div className="grid grid-cols-2 gap-8 mt-10">
 
 
+<div className="bg-slate-900 p-10 rounded">
 
-{/* ATTENDANCE */}
+<h2>
 
-
-
-<div className="grid grid-cols-2 gap-10">
-
-
-<div className="
-
-bg-slate-900
-
-rounded-3xl
-p-10
-
-">
-
-<h2 className="text-4xl">
-
-Attendance
+Overall Attendance
 
 </h2>
 
-
-
-<h1 className="
-
-text-7xl
-font-bold
-
-mt-5
-
-">
+<h1 className="text-7xl">
 
 {
 
 Math.round(
-totalAttendance
+overallPercent
 )
 
 }%
 
 </h1>
 
-
-
-<p>
-
-Overall Attendance
-
-</p>
-
 </div>
 
 
 
 
-
-<div className="
-
-bg-slate-900
-
-rounded-3xl
-p-10
-
-">
+<div className="bg-slate-900 p-10 rounded">
 
 <ResponsiveContainer
-
 width="100%"
-height={250}
-
+height={300}
 >
 
 <PieChart>
 
 <Pie
 
-data={chart}
+data={pieData}
 
 dataKey="value"
 
 nameKey="name"
-
-outerRadius={90}
 
 label
 
@@ -474,9 +297,9 @@ label
 
 {
 
-chart.map(
+pieData.map(
 
-(c,i)=>(
+(_,i)=>
 
 <Cell
 
@@ -486,15 +309,13 @@ fill={[
 
 "#22c55e",
 "#3b82f6",
-"#f59e0b",
 "#ef4444",
+"#eab308",
 "#8b5cf6"
 
 ][i%5]}
 
 />
-
-)
 
 )
 
@@ -514,144 +335,7 @@ fill={[
 
 
 
-
-
-
-{/* QUICK CARDS */}
-
-
-
-<div className="grid grid-cols-4 gap-5">
-
-
-<div
-
-onClick={()=>
-
-document
-.getElementById(
-"subjects"
-)
-.scrollIntoView()
-
-}
-
-className="
-
-bg-blue-600
-p-6
-rounded-xl
-
-cursor-pointer
-
-"
-
->
-
-<FaBook/>
-
-Subjects
-
-</div>
-
-
-
-
-
-<div
-
-onClick={()=>
-
-nav("/assignments")
-
-}
-
-className="
-
-bg-green-600
-p-6
-rounded-xl
-
-cursor-pointer
-
-"
-
->
-
-<FaClipboard/>
-
-Assignments
-
-</div>
-
-
-
-
-<div
-
-onClick={()=>
-
-nav("/notifications")
-
-}
-
-className="
-
-bg-purple-600
-p-6
-rounded-xl
-
-cursor-pointer
-
-"
-
->
-
-<FaBell/>
-
-Notifications
-
-</div>
-
-
-
-
-<div
-
-onClick={()=>
-
-nav("/grades")
-
-}
-
-className="
-
-bg-orange-600
-p-6
-rounded-xl
-
-cursor-pointer
-
-"
-
->
-
-<FaUserGraduate/>
-
-Grades
-
-</div>
-
-</div>
-
-
-
-
-
-
-{/* SUBJECTS */}
-
-
+{/* subjects */}
 
 <div
 
@@ -660,18 +344,15 @@ id="subjects"
 className="
 
 bg-slate-900
-
-rounded-3xl
+rounded
 p-10
+mt-10
 
-">
+"
 
-<h1 className="
+>
 
-text-4xl
-mb-8
-
-">
+<h1 className="text-4xl">
 
 Subjects
 
@@ -682,7 +363,7 @@ Subjects
 
 subjects.map(
 
-s=>(
+s=>
 
 <div
 
@@ -691,31 +372,21 @@ key={s._id}
 className="
 
 bg-slate-800
-
 p-5
-mb-4
-
-rounded-xl
+rounded
+mt-4
 
 "
 
 >
 
-<p>
-
 {s.code}
 
-</p>
-
-<h2>
+<br/>
 
 {s.name}
 
-</h2>
-
 </div>
-
-)
 
 )
 
@@ -726,28 +397,24 @@ rounded-xl
 
 
 
+{/* attendance */}
 
+<div
 
+id="attendance"
 
-{/* SUBJECT ATTENDANCE */}
-
-
-
-<div className="
+className="
 
 bg-slate-900
-
-rounded-3xl
+rounded
 p-10
+mt-10
 
-">
+"
 
-<h1 className="
+>
 
-text-4xl
-mb-8
-
-">
+<h1 className="text-4xl">
 
 Subject Attendance
 
@@ -758,7 +425,7 @@ Subject Attendance
 
 attendance.map(
 
-a=>(
+a=>
 
 <div
 
@@ -767,11 +434,9 @@ key={a._id}
 className="
 
 bg-slate-800
-
 p-5
-mb-5
-
-rounded-xl
+rounded
+mt-5
 
 "
 
@@ -784,78 +449,34 @@ rounded-xl
 </h2>
 
 
-
 <p>
 
-Present:
+{a.present}
 
-{a.present}/{a.total}
+/
+
+{a.total}
 
 </p>
 
 
-
-<p>
-
-{
-
-Math.round(
-
-(a.present/a.total)*100
-
-)
-
-}%
-
-</p>
-
-
-
-
-<div className="
-
-bg-slate-700
-
-h-3
-rounded
-
-">
+<div className="bg-gray-700 h-3 rounded">
 
 <div
 
-className="
-
-h-3
-rounded
-
-"
+className="h-3 bg-green-500 rounded"
 
 style={{
 
 width:
 
-`${Math.round(
+`${
 
-(a.present/a.total)*100
+(a.present/a.total)
 
-)}%`,
+*100
 
-
-background:
-
-(
-
-(a.present/a.total)*100
-
-)<75
-
-?
-
-"red"
-
-:
-
-"green"
+}%`
 
 }}
 
@@ -869,12 +490,9 @@ background:
 
 )
 
-)
-
 }
 
 </div>
-
 
 
 </div>
