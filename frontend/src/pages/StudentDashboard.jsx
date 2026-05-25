@@ -1,34 +1,42 @@
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
-import {
-PieChart,
-Pie,
-Cell,
-ResponsiveContainer,
-Tooltip
-} from "recharts";
 
 import {
 
 FaBook,
 FaBell,
 FaClipboard,
-FaUserGraduate,
 FaStickyNote,
-FaHome,
-FaSignOutAlt
+FaUserGraduate,
+FaSignOutAlt,
+FaBars
 
 }
 
 from "react-icons/fa";
 
+import {
+
+PieChart,
+Pie,
+Cell,
+Tooltip,
+ResponsiveContainer
+
+}
+
+from "recharts";
+
+
 export default function StudentDashboard(){
 
 const nav=useNavigate();
 
+const [open,setOpen]=useState(true);
+
 const [user,setUser]=useState(null);
+
 const [subjects,setSubjects]=useState([]);
 const [attendance,setAttendance]=useState([]);
 const [notes,setNotes]=useState([]);
@@ -71,22 +79,15 @@ try{
 
 const sub=
 await axios.get(
-
 `https://smart-classroom-system-23f9.onrender.com/api/subjects?branch=${branch}&semester=${semester}`
-
 );
 
-setSubjects(
-sub.data
-);
-
+setSubjects(sub.data);
 
 
 const att=
 await axios.get(
-
 "https://smart-classroom-system-23f9.onrender.com/api/attendance"
-
 );
 
 setAttendance(
@@ -104,52 +105,51 @@ Number(a.semester)===Number(semester)
 );
 
 
+try{
 
-const note=
+const n=
 await axios.get(
-
 "https://smart-classroom-system-23f9.onrender.com/api/notes"
-
 );
 
-setNotes(
-note.data
-);
+setNotes(n.data);
+
+}catch{}
 
 
 
-const assign=
+try{
+
+const a=
 await axios.get(
-
 "https://smart-classroom-system-23f9.onrender.com/api/assignments"
-
 );
 
-setAssignments(
-assign.data
-);
+setAssignments(a.data);
+
+}catch{}
 
 
 
-const notify=
+try{
+
+const not=
 await axios.get(
-
 "https://smart-classroom-system-23f9.onrender.com/api/notifications"
-
 );
 
-setNotifications(
-notify.data
-);
+setNotifications(not.data);
 
-}catch(err){
+}catch{}
+
+}
+catch(err){
 
 console.log(err);
 
 }
 
 }
-
 
 
 
@@ -163,43 +163,25 @@ nav("/");
 
 
 
-const totalPresent=
-
+const present=
 attendance.reduce(
-
-(sum,a)=>
-
-sum+a.present,
-
+(s,a)=>s+a.present,
 0
-
 );
 
-
-
-const totalClasses=
-
+const total=
 attendance.reduce(
-
-(sum,a)=>
-
-sum+a.total,
-
+(s,a)=>s+a.total,
 0
-
 );
-
-
 
 const overall=
 
-totalClasses
+total
 
 ?
 
-(totalPresent/totalClasses)
-
-*100
+(present/total)*100
 
 :
 
@@ -207,7 +189,7 @@ totalClasses
 
 
 
-const pieData=
+const chart=
 
 attendance.map(
 
@@ -217,11 +199,7 @@ name:a.subject,
 value:
 
 Math.round(
-
-(a.present/a.total)
-
-*100
-
+(a.present/a.total)*100
 )
 
 })
@@ -230,242 +208,118 @@ Math.round(
 
 
 
-
-
 return(
 
-<div className="
-
-flex
-min-h-screen
-
-bg-slate-950
-text-white
-
-">
-
+<div className="flex bg-slate-950 text-white min-h-screen">
 
 
 {/* SIDEBAR */}
 
 
+<div
 
-<div className="
+className={`
 
-w-64
 bg-slate-900
 
-p-6
+transition-all
 
-shadow-2xl
+${open?"w-64":"w-20"}
+
+p-5
 
 sticky
 top-0
 
 h-screen
 
-">
+`}
 
-<h1 className="
+>
 
-text-3xl
-font-bold
+<button
 
-mb-12
+onClick={()=>
 
-">
+setOpen(
+!open
+)
 
-🏫 Smart
+}
+
+>
+
+<FaBars/>
+
+</button>
+
+
+<h1 className="mt-8 text-3xl">
+
+🏫
+
+{open&&" Smart"}
 
 </h1>
 
 
 
-<div className="space-y-6">
+<div className="mt-12 space-y-8">
 
 
-<button
-
-onClick={()=>
-
-document
-
-.getElementById(
-
-"subjects"
-
-)
-
+<button onClick={()=>
+document.getElementById("subjects")
 .scrollIntoView()
-
 }
-
-className="
-
-flex
-items-center
-gap-3
-
-hover:text-blue-400
-
-"
-
->
+className="flex gap-3 hover:text-blue-400">
 
 <FaBook/>
 
-Subjects
+{open&&"Subjects"}
 
 </button>
 
 
 
-<button
-
-onClick={()=>
-
-document
-
-.getElementById(
-
-"notes"
-
-)
-
+<button onClick={()=>
+document.getElementById("notes")
 .scrollIntoView()
-
 }
-
-className="
-
-flex
-items-center
-gap-3
-
-hover:text-yellow-400
-
-"
-
->
+className="flex gap-3 hover:text-yellow-400">
 
 <FaStickyNote/>
 
-Notes
+{open&&"Notes"}
 
 </button>
 
 
 
-
-<button
-
-onClick={()=>
-
-document
-
-.getElementById(
-
-"assignments"
-
-)
-
+<button onClick={()=>
+document.getElementById("assignments")
 .scrollIntoView()
-
 }
-
-className="
-
-flex
-items-center
-gap-3
-
-hover:text-green-400
-
-"
-
->
+className="flex gap-3 hover:text-green-400">
 
 <FaClipboard/>
 
-Assignments
+{open&&"Assignments"}
 
 </button>
 
 
 
-
-<button
-
-onClick={()=>
-
-document
-
-.getElementById(
-
-"grades"
-
-)
-
+<button onClick={()=>
+document.getElementById("notifications")
 .scrollIntoView()
-
 }
-
-className="
-
-flex
-items-center
-gap-3
-
-hover:text-orange-400
-
-"
-
->
-
-<FaUserGraduate/>
-
-Grades
-
-</button>
-
-
-
-
-<button
-
-onClick={()=>
-
-document
-
-.getElementById(
-
-"notifications"
-
-)
-
-.scrollIntoView()
-
-}
-
-className="
-
-flex
-items-center
-gap-3
-
-hover:text-purple-400
-
-"
-
->
+className="flex gap-3 hover:text-purple-400">
 
 <FaBell/>
 
-Notifications
+{open&&"Notifications"}
 
 </button>
-
-
 
 </div>
 
@@ -478,18 +332,16 @@ onClick={logout}
 className="
 
 absolute
-
 bottom-10
 
 bg-red-500
 
-px-5
+px-4
 py-3
 
 rounded-xl
 
 flex
-items-center
 gap-2
 
 "
@@ -498,7 +350,7 @@ gap-2
 
 <FaSignOutAlt/>
 
-Logout
+{open&&"Logout"}
 
 </button>
 
@@ -507,49 +359,42 @@ Logout
 
 
 
-
 {/* MAIN */}
-
 
 
 <div className="flex-1 p-10">
 
-<h1 className="text-6xl font-bold">
+<h1 className="text-7xl font-bold">
 
 Student Dashboard
 
 </h1>
 
 
-<div className="mt-3">
+<p>
 
 {user?.branch}
 
 Semester {user?.semester}
 
-</div>
+</p>
 
 
 
 
-<div className="grid grid-cols-2 gap-10 mt-10">
+<div className="grid grid-cols-2 gap-8 mt-10">
 
-<div className="bg-slate-900 p-10 rounded-3xl">
 
-<h2>
+<div className="bg-slate-900 rounded-3xl p-10">
 
 Attendance
-
-</h2>
 
 <h1 className="text-7xl">
 
 {
 
 Math.round(
-
 overall
-
 )
 
 }%
@@ -560,20 +405,23 @@ overall
 
 
 
-<div className="bg-slate-900 p-10 rounded-3xl">
+
+<div className="bg-slate-900 rounded-3xl p-10">
 
 <ResponsiveContainer
 width="100%"
-height={250}
+height={260}
 >
 
 <PieChart>
 
 <Pie
 
-data={pieData}
+data={chart}
 
 dataKey="value"
+
+outerRadius={95}
 
 label
 
@@ -581,7 +429,7 @@ label
 
 {
 
-pieData.map(
+chart.map(
 
 (_,i)=>
 
@@ -619,221 +467,179 @@ fill={[
 
 
 
-{/* QUICK BUTTONS */}
+
+{/* CARDS */}
 
 
+
+<div className="grid grid-cols-4 gap-6 mt-10">
+
+<Card title="Subjects" count={subjects.length}/>
+<Card title="Assignments" count={assignments.length}/>
+<Card title="Notes" count={notes.length}/>
+<Card title="Notifications" count={notifications.length}/>
+
+</div>
+
+
+
+
+
+<Section
+id="subjects"
+title="Subjects"
+data={subjects}
+field="name"
+/>
+
+
+<Section
+id="notes"
+title="Notes"
+data={notes}
+field="title"
+/>
+
+
+<Section
+id="assignments"
+title="Assignments"
+data={assignments}
+field="title"
+/>
+
+
+<Section
+id="notifications"
+title="Notifications"
+data={notifications}
+field="message"
+/>
+
+
+
+</div>
+
+</div>
+
+);
+
+}
+
+
+
+
+function Card({
+
+title,
+count
+
+}){
+
+return(
 
 <div className="
 
-grid
-grid-cols-4
+bg-slate-900
 
-gap-5
+p-8
+rounded-2xl
 
-mt-10
+hover:scale-105
+
+transition
 
 ">
 
-<button
-onClick={()=>
-document.getElementById("subjects")
-.scrollIntoView()
-}
-className="bg-blue-600 p-6 rounded-xl">
+<h2>
 
-Subjects
+{title}
 
-</button>
+</h2>
 
+<h1 className="text-4xl">
 
-<button
-onClick={()=>
-document.getElementById("assignments")
-.scrollIntoView()
-}
-className="bg-green-600 p-6 rounded-xl">
+{count}
 
-Assignments
-
-</button>
-
-
-<button
-onClick={()=>
-document.getElementById("notifications")
-.scrollIntoView()
-}
-className="bg-purple-600 p-6 rounded-xl">
-
-Notifications
-
-</button>
-
-
-<button
-onClick={()=>
-document.getElementById("grades")
-.scrollIntoView()
-}
-className="bg-orange-600 p-6 rounded-xl">
-
-Grades
-
-</button>
+</h1>
 
 </div>
 
+);
+
+}
 
 
 
-{/* SUBJECTS */}
 
+function Section({
 
+id,
+title,
+data,
+field
+
+}){
+
+return(
 
 <section
-id="subjects"
+
+id={id}
+
 className="mt-12"
+
 >
 
 <h1 className="text-4xl">
 
-Subjects
+{title}
 
 </h1>
 
 {
 
-subjects.map(
+data.length
 
-s=>
+?
+
+data.map(
+
+d=>
 
 <div
-key={s._id}
-className="bg-slate-900 p-5 mt-5 rounded">
 
-{s.code}
+key={d._id}
 
-<br/>
+className="
 
-{s.name}
+bg-slate-900
+p-5
+rounded
 
-</div>
+mt-5
 
-)
+"
 
-}
-
-</section>
-
-
-
-
-<section
-id="notes"
-className="mt-12"
 >
 
-<h1 className="text-4xl">
-
-Notes
-
-</h1>
-
-{
-
-notes.map(
-
-n=>
-
-<div
-key={n._id}
-className="bg-slate-900 p-5 mt-5 rounded">
-
-{n.title}
+{d[field]}
 
 </div>
 
 )
 
-}
+:
 
-</section>
+<p className="mt-4 text-gray-400">
 
+No data available
 
-
-
-
-<section
-id="assignments"
-className="mt-12"
->
-
-<h1 className="text-4xl">
-
-Assignments
-
-</h1>
-
-{
-
-assignments.map(
-
-a=>
-
-<div
-key={a._id}
-className="bg-slate-900 p-5 mt-5 rounded">
-
-{a.title}
-
-</div>
-
-)
+</p>
 
 }
 
 </section>
-
-
-
-
-
-<section
-id="notifications"
-className="mt-12"
->
-
-<h1 className="text-4xl">
-
-Notifications
-
-</h1>
-
-{
-
-notifications.map(
-
-n=>
-
-<div
-key={n._id}
-className="bg-slate-900 p-5 mt-5 rounded">
-
-{n.message}
-
-</div>
-
-)
-
-}
-
-</section>
-
-
-
-</div>
-
-</div>
 
 );
 
