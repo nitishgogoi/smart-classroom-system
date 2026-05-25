@@ -5,17 +5,12 @@ new mongoose.Schema({
 
 student:String,
 
-branch:String,
+status:String,
 
-semester:Number,
-
-subject:String,
-
-present:Number,
-
-total:Number,
-
-percent:Number
+date:{
+type:Date,
+default:Date.now
+}
 
 });
 

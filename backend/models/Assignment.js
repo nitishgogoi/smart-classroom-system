@@ -2,22 +2,11 @@ const mongoose = require("mongoose");
 
 const assignmentSchema = new mongoose.Schema({
 
-student:{
-type:String,
-required:true
-},
-
-branch:String,
-
-semester:Number,
-
+title:String,
+description:String,
 subject:String,
 
-title:String,
-
-link:String,
-
-submittedAt:{
+createdAt:{
 type:Date,
 default:Date.now
 }

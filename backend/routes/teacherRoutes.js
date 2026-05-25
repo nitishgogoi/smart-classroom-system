@@ -1,154 +1,37 @@
-const express =
-require("express");
+const router=
+require("express").Router();
 
-const router =
-express.Router();
+const c=
+require("../controllers/teacherController");
 
-const User =
-require("../models/User");
+router.post(
+"/assignment",
+c.createAssignment
+);
 
-const Assignment =
-require("../models/Assignment");
+router.post(
+"/attendance",
+c.markAttendance
+);
 
-const Note =
-require("../models/Note");
-
-
+router.post(
+"/notes",
+c.uploadNote
+);
 
 router.get(
-
-"/students",
-
-async(req,res)=>{
-
-try{
-
-const {
-
-branch,
-semester
-
-}
-
-=
-
-req.query;
-
-
-
-const students=
-
-await User.find({
-
-role:"student",
-
-branch,
-
-semester:Number(
-semester
-)
-
-})
-
-.select("-password");
-
-
-
-res.json(
-students
+"/assignment",
+c.getAssignments
 );
-
-}
-
-catch(err){
-
-res.status(500)
-.json(err);
-
-}
-
-}
-
-);
-
-
 
 router.get(
-
-"/dashboard",
-
-async(req,res)=>{
-
-try{
-
-const {
-
-branch,
-semester
-
-}
-
-=
-
-req.query;
-
-
-
-const students=
-
-await User.countDocuments({
-
-role:"student",
-
-branch,
-
-semester
-
-});
-
-
-const assignments=
-
-await Assignment.countDocuments({
-
-branch,
-semester
-
-});
-
-
-const notes=
-
-await Note.countDocuments({
-
-branch,
-semester
-
-});
-
-
-res.json({
-
-students,
-assignments,
-notes
-
-});
-
-}
-
-catch(err){
-
-res.status(500)
-.json(err);
-
-}
-
-}
-
+"/attendance",
+c.getAttendance
 );
 
+router.get(
+"/notes",
+c.getNotes
+);
 
-
-module.exports=
-router;
+module.exports=router;

@@ -1,39 +1,110 @@
-import { useEffect, useState } from "react";
 import axios from "axios";
+import {useEffect,useState}
+from "react";
+
 import "./TeacherDashboard.css";
 
 function TeacherDashboard(){
 
-const [students,setStudents]=useState([]);
-const [tab,setTab]=useState("students");
+const [tab,setTab]=
+useState("students");
+
+const [students,setStudents]=
+useState([]);
+
+const [title,setTitle]=
+useState("");
+
+const [notes,setNotes]=
+useState("");
+
+const [attendance,setAttendance]=
+useState("");
+
+
 
 useEffect(()=>{
 
-getStudents();
+loadStudents();
 
 },[]);
 
 
-const getStudents = async()=>{
 
-try{
+async function loadStudents(){
 
-const res =
+let res=
 await axios.get(
 "https://smart-classroom-system-23f9.onrender.com/api/users/students"
 );
 
-setStudents(res.data);
+setStudents(
+res.data
+);
 
 }
 
-catch(err){
 
-console.log(err);
+
+async function createAssignment(){
+
+await axios.post(
+"https://smart-classroom-system-23f9.onrender.com/api/teacher/assignment",
+
+{
+title
+}
+
+);
+
+alert(
+"Assignment created"
+);
 
 }
 
-};
+
+
+async function uploadNotes(){
+
+await axios.post(
+"https://smart-classroom-system-23f9.onrender.com/api/teacher/notes",
+
+{
+title:notes
+}
+
+);
+
+alert(
+"Notes uploaded"
+);
+
+}
+
+
+
+async function markAttendance(){
+
+await axios.post(
+"https://smart-classroom-system-23f9.onrender.com/api/teacher/attendance",
+
+{
+
+student:attendance,
+
+status:"Present"
+
+}
+
+);
+
+alert(
+"Attendance saved"
+);
+
+}
+
 
 
 return(
@@ -42,84 +113,70 @@ return(
 
 <div className="sidebar">
 
-<h2>Teacher</h2>
+<button
+onClick={()=>setTab("students")}
+>
 
-<button onClick={()=>setTab("students")}>
 Students
+
 </button>
 
-<button onClick={()=>setTab("assignments")}>
-Assignments
-</button>
-
-<button onClick={()=>setTab("attendance")}>
-Attendance
-</button>
-
-<button onClick={()=>setTab("notes")}>
-Notes
-</button>
 
 <button
-className="logout"
-onClick={()=>window.location="/"}
+onClick={()=>setTab("assignment")}
 >
-Logout
+
+Assignments
+
+</button>
+
+
+<button
+onClick={()=>setTab("attendance")}
+>
+
+Attendance
+
+</button>
+
+
+<button
+onClick={()=>setTab("notes")}
+>
+
+Notes
+
 </button>
 
 </div>
+
 
 
 <div className="content">
 
-<h1>Teacher Dashboard</h1>
-
-
-<div className="cards">
-
-<div className="card blue">
-Students
-<br/>
-{students.length}
-</div>
-
-<div className="card green">
-Assignments
-</div>
-
-<div className="card purple">
-Attendance
-</div>
-
-<div className="card orange">
-Notes
-</div>
-
-</div>
+<h1>
+Teacher Dashboard
+</h1>
 
 
 
 {
-tab==="students" && (
 
-<div>
+tab==="students"
 
-<h2>Students</h2>
+&&
 
-{
-students.map((s)=>(
+students.map(s=>(
 
 <div
-key={s._id}
-className="studentCard"
+className="card"
 >
 
-<h3>{s.name}</h3>
-
-<p>{s.email}</p>
+<h3>
+{s.name}
+</h3>
 
 <p>
-Branch:
 {s.branch}
 </p>
 
@@ -131,67 +188,133 @@ Semester:
 </div>
 
 ))
-}
 
-</div>
-
-)
 }
 
 
 
 {
-tab==="assignments" && (
 
-<div className="box">
+tab==="assignment"
 
-<h2>Assignments</h2>
+&&
 
-<button>
+<div>
+
+<input
+
+placeholder=
+"Assignment"
+
+onChange={(e)=>
+
+setTitle(
+e.target.value
+)
+
+}
+
+/>
+
+
+<button
+
+onClick={
+createAssignment
+}
+
+>
+
 Create Assignment
+
 </button>
 
 </div>
 
-)
 }
 
 
 
 {
-tab==="attendance" && (
 
-<div className="box">
+tab==="attendance"
 
-<h2>Attendance</h2>
+&&
 
-<button>
+<div>
+
+<input
+
+placeholder=
+"Student"
+
+onChange={(e)=>
+
+setAttendance(
+e.target.value
+)
+
+}
+
+/>
+
+<button
+
+onClick={
+markAttendance
+}
+
+>
+
 Mark Attendance
+
 </button>
 
 </div>
 
-)
 }
 
 
 
 {
-tab==="notes" && (
 
-<div className="box">
+tab==="notes"
 
-<h2>Notes</h2>
+&&
 
-<button>
+<div>
+
+<input
+
+placeholder=
+"Notes"
+
+onChange={(e)=>
+
+setNotes(
+e.target.value
+)
+
+}
+
+/>
+
+
+<button
+
+onClick={
+uploadNotes
+}
+
+>
+
 Upload Notes
+
 </button>
 
 </div>
 
-)
 }
-
 
 
 </div>

@@ -1,23 +1,23 @@
-body{
-margin:0;
-font-family:Arial;
-background:#02061d;
-color:white;
-}
-
 .teacher{
+
 display:flex;
 min-height:100vh;
+background:#02061d;
+color:white;
+
 }
 
 
 .sidebar{
 
 width:220px;
-background:#08102e;
 padding:20px;
+background:#09122d;
+
 display:flex;
+
 flex-direction:column;
+
 gap:15px;
 
 }
@@ -26,38 +26,26 @@ gap:15px;
 .sidebar button{
 
 padding:15px;
+
+background:#1b2550;
+
 border:none;
-background:#101b45;
+
 color:white;
-border-radius:10px;
+
 cursor:pointer;
 
-}
-
-
-.logout{
-
-background:red !important;
+border-radius:10px;
 
 }
+
 
 
 .content{
 
 flex:1;
+
 padding:30px;
-
-}
-
-
-
-.cards{
-
-display:grid;
-grid-template-columns:
-repeat(4,1fr);
-
-gap:20px;
 
 }
 
@@ -65,79 +53,33 @@ gap:20px;
 
 .card{
 
-padding:30px;
-border-radius:20px;
-font-size:25px;
-font-weight:bold;
-
-}
-
-
-
-.blue{
-
-background:#355CFF;
-
-}
-
-.green{
-
-background:#00B140;
-
-}
-
-.purple{
-
-background:#B000FF;
-
-}
-
-.orange{
-
-background:#FF5A00;
-
-}
-
-
-
-.studentCard{
-
-background:#08102e;
+background:#101c4a;
 
 padding:20px;
 
-margin:15px 0;
+margin:10px;
 
-border-radius:15px;
-
-}
-
-
-
-.box{
-
-background:#08102e;
-
-padding:30px;
-
-border-radius:20px;
-
-margin-top:20px;
+border-radius:12px;
 
 }
 
 
-.box button{
+
+input{
 
 padding:15px;
 
-border:none;
+width:300px;
 
-background:#355CFF;
+margin:10px;
 
-color:white;
+}
 
-border-radius:10px;
+
+
+button{
+
+padding:15px;
 
 cursor:pointer;
 
