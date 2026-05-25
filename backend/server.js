@@ -19,7 +19,9 @@ express.json()
 );
 
 app.use(
-cors()
+cors({
+origin:"*"
+})
 );
 
 
