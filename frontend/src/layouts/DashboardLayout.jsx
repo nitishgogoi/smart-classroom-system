@@ -18,6 +18,7 @@ export default function DashboardLayout() {
     { name: "Assignments", path: "/teacher/assignments", icon: <FaClipboardList /> },
     { name: "Attendance", path: "/teacher/attendance", icon: <FaBell /> },
     { name: "Notes", path: "/teacher/notes", icon: <FaStickyNote /> },
+    { name: "Students", path: "/teacher/students", icon: <FaUserGraduate /> }, // <-- THIS IS THE NEW LINK!
   ] : [
     { name: "Dashboard", path: "/student", icon: <FaHome /> },
     { name: "My Classes", path: "/student/classes", icon: <FaBook /> },
