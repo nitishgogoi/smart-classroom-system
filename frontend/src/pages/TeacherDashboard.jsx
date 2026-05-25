@@ -1,303 +1,170 @@
-import {
-useNavigate
-}
-from "react-router-dom";
-
-import {
-
-FaBook,
-FaClipboard,
-FaUsers,
-FaBell
-
-}
-
-from "react-icons/fa";
-
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function TeacherDashboard(){
 
-const nav =
-useNavigate();
+const [students,setStudents]=useState([]);
+const [teacher,setTeacher]=useState(null);
 
+useEffect(()=>{
 
-function logout(){
+const email =
+localStorage.getItem("email");
 
-localStorage.clear();
+axios.get(
+"https://smart-classroom-system-23f9.onrender.com/api/users/teachers"
+)
+.then(res=>{
 
-nav("/");
+const t =
+res.data.find(
+x=>x.email===email
+);
+
+setTeacher(t);
+
+if(t){
+
+axios.get(
+`https://smart-classroom-system-23f9.onrender.com/api/users/students`
+)
+.then(r=>{
+
+const filtered=
+r.data.filter(
+
+s=>
+s.branch===t.branch &&
+Number(s.semester)===Number(t.semester)
+
+);
+
+setStudents(filtered);
+
+});
 
 }
+
+});
+
+},[]);
 
 
 return(
 
-<div className="
+<div style={{
+padding:"30px",
+color:"white"
+}}>
 
-bg-slate-950
-text-white
-min-h-screen
-flex
-
-">
-
-
-{/* SIDEBAR */}
-
-<div className="
-
-w-24
-hover:w-72
-
-transition-all
-
-bg-slate-900
-
-h-screen
-
-p-6
-
-overflow-hidden
-
-">
-
-<h1 className="
-
-text-4xl
-
-">
-
-👨‍🏫
-
+<h1>
+Teacher Dashboard
 </h1>
 
+{teacher && (
 
+<div>
 
-<div className="
+<h3>
+Branch:
+{teacher.branch}
+</h3>
 
-mt-12
-space-y-8
-
-">
-
-<p>
-
-📚 Classes
-
-</p>
-
-<p>
-
-📝 Assignments
-
-</p>
-
-<p>
-
-📊 Attendance
-
-</p>
-
-<p>
-
-🔔 Notices
-
-</p>
+<h3>
+Semester:
+{teacher.semester}
+</h3>
 
 </div>
 
+)}
 
-<button
-
-onClick={logout}
-
-className="
-
-bg-red-500
-mt-20
-px-5
-py-3
-rounded-xl
-
-"
-
+<div
+style={{
+display:"grid",
+gridTemplateColumns:
+"repeat(4,1fr)",
+gap:"20px",
+marginTop:"20px"
+}}
 >
 
-Logout
+<button>
+Students
+</button>
 
+<button>
+Assignments
+</button>
+
+<button>
+Attendance
+</button>
+
+<button>
+Notes
 </button>
 
 </div>
 
 
-
-
-
-<div className="
-
-flex-1
-p-10
-
-space-y-10
-
-">
-
-<h1 className="
-
-text-6xl
-font-bold
-
-">
-
-Teacher Dashboard
-
-</h1>
-
-
-
-
-<div className="
-
-grid
-grid-cols-4
-gap-5
-
-">
-
-<div className="
-
-bg-blue-600
-p-10
-rounded-2xl
-
-">
-
-<FaUsers/>
-
+<h2 style={{
+marginTop:"40px"
+}}>
 Students
+</h2>
 
-</div>
 
+<table
+style={{
+width:"100%",
+marginTop:"20px",
+background:"#111",
+padding:"10px"
+}}
+>
 
+<thead>
 
-<div className="
+<tr>
 
-bg-green-600
-p-10
-rounded-2xl
+<th>Name</th>
+<th>Email</th>
+<th>Branch</th>
+<th>Semester</th>
 
-">
+</tr>
 
-<FaClipboard/>
+</thead>
 
-Assignments
+<tbody>
 
-</div>
+{
 
+students.map(
+s=>(
 
+<tr key={s._id}>
 
-<div className="
+<td>{s.name}</td>
+<td>{s.email}</td>
+<td>{s.branch}</td>
+<td>{s.semester}</td>
 
-bg-purple-600
-p-10
-rounded-2xl
-
-">
-
-<FaBook/>
-
-Subjects
-
-</div>
-
-
-
-<div className="
-
-bg-orange-600
-p-10
-rounded-2xl
-
-">
-
-<FaBell/>
-
-Notifications
-
-</div>
-
-</div>
-
-
-
-
-
-<div className="
-
-bg-slate-900
-rounded-3xl
-p-10
-
-h-72
-
-">
-
-<h1>
-
-Attendance Overview
-
-</h1>
-
-</div>
-
-
-
-
-<div className="
-
-bg-slate-900
-rounded-3xl
-p-10
-
-h-72
-
-">
-
-<h1>
-
-Assignments
-
-</h1>
-
-</div>
-
-
-
-
-<div className="
-
-bg-slate-900
-rounded-3xl
-p-10
-
-h-72
-
-">
-
-<h1>
-
-Uploaded Notes
-
-</h1>
-
-</div>
-
-
-
-</div>
-
-</div>
+</tr>
 
 )
+
+)
+
+}
+
+</tbody>
+
+</table>
+
+</div>
+
+);
 
 }
