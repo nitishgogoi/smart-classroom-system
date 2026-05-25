@@ -1,122 +1,205 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "./TeacherDashboard.css";
 
-export default function TeacherDashboard(){
+function TeacherDashboard(){
 
 const [students,setStudents]=useState([]);
-const [teacher,setTeacher]=useState(null);
+const [tab,setTab]=useState("students");
 
 useEffect(()=>{
 
-async function load(){
+getStudents();
+
+},[]);
+
+
+const getStudents = async()=>{
 
 try{
 
-const email =
-localStorage.getItem("email");
-
-const teacherRes =
-await axios.get(
-"https://smart-classroom-system-23f9.onrender.com/api/users/teachers"
-);
-
-const currentTeacher =
-teacherRes.data.find(
-t=>t.email===email
-);
-
-setTeacher(currentTeacher);
-
-if(!currentTeacher) return;
-
-const studentRes =
+const res =
 await axios.get(
 "https://smart-classroom-system-23f9.onrender.com/api/users/students"
 );
 
-const filtered =
-studentRes.data.filter(
-
-s=>
-
-s.branch===currentTeacher.branch &&
-Number(s.semester)===Number(currentTeacher.semester)
-
-);
-
-setStudents(filtered);
+setStudents(res.data);
 
 }
+
 catch(err){
 
 console.log(err);
 
 }
 
-}
-
-load();
-
-},[]);
+};
 
 
 return(
 
-<div style={{
-padding:"30px",
-color:"white"
-}}>
+<div className="teacher">
+
+<div className="sidebar">
+
+<h2>Teacher</h2>
+
+<button onClick={()=>setTab("students")}>
+Students
+</button>
+
+<button onClick={()=>setTab("assignments")}>
+Assignments
+</button>
+
+<button onClick={()=>setTab("attendance")}>
+Attendance
+</button>
+
+<button onClick={()=>setTab("notes")}>
+Notes
+</button>
+
+<button
+className="logout"
+onClick={()=>window.location="/"}
+>
+Logout
+</button>
+
+</div>
+
+
+<div className="content">
 
 <h1>Teacher Dashboard</h1>
 
-{
 
-teacher && (
+<div className="cards">
 
-<>
-<h3>
-Branch:
-{teacher.branch}
-</h3>
-
-<h3>
-Semester:
-{teacher.semester}
-</h3>
-</>
-
-)
-
-}
-
-
-<h2>
+<div className="card blue">
 Students
-</h2>
+<br/>
+{students.length}
+</div>
+
+<div className="card green">
+Assignments
+</div>
+
+<div className="card purple">
+Attendance
+</div>
+
+<div className="card orange">
+Notes
+</div>
+
+</div>
+
 
 
 {
+tab==="students" && (
 
-students.map(
+<div>
 
-s=>(
+<h2>Students</h2>
 
-<div key={s._id}>
+{
+students.map((s)=>(
 
-{s.name}
--
-{s.email}
+<div
+key={s._id}
+className="studentCard"
+>
+
+<h3>{s.name}</h3>
+
+<p>{s.email}</p>
+
+<p>
+Branch:
+{s.branch}
+</p>
+
+<p>
+Semester:
+{s.semester}
+</p>
+
+</div>
+
+))
+}
 
 </div>
 
 )
+}
+
+
+
+{
+tab==="assignments" && (
+
+<div className="box">
+
+<h2>Assignments</h2>
+
+<button>
+Create Assignment
+</button>
+
+</div>
 
 )
-
 }
+
+
+
+{
+tab==="attendance" && (
+
+<div className="box">
+
+<h2>Attendance</h2>
+
+<button>
+Mark Attendance
+</button>
+
+</div>
+
+)
+}
+
+
+
+{
+tab==="notes" && (
+
+<div className="box">
+
+<h2>Notes</h2>
+
+<button>
+Upload Notes
+</button>
+
+</div>
+
+)
+}
+
+
+
+</div>
 
 </div>
 
 );
 
 }
+
+export default TeacherDashboard;
