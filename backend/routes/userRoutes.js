@@ -1,143 +1,91 @@
-const express =
-require("express");
+const express = require("express");
+const router = express.Router();
+const User = require("../models/User");
 
-const router =
-express.Router();
 
-const User =
-require("../models/User");
+// =========================
+// GET ALL USERS
+// =========================
+router.get("/", async (req,res)=>{
 
+ try{
 
+   const users =
+   await User.find()
+   .select("-password");
 
-/* -------------------
-GET ALL USERS
-/api/users
-------------------- */
+   res.json(users);
 
-router.get(
+ }
 
-"/",
+ catch(err){
 
-async(req,res)=>{
+   res.status(500).json({
+      message:err.message
+   });
 
-try{
+ }
 
-const users=
+});
 
-await User.find()
 
-.select("-password");
 
+// =========================
+// GET STUDENTS ONLY
+// =========================
+router.get("/students", async(req,res)=>{
 
-res.json(
-users
-);
+ try{
 
-}
+   const students =
+   await User.find({
+      role:"student"
+   })
+   .select("-password");
 
-catch(err){
+   res.json(students);
 
-res.status(500)
-.json(err);
+ }
 
-}
+ catch(err){
 
-}
+   res.status(500).json({
+      message:err.message
+   });
 
-);
+ }
 
+});
 
 
 
-/* -------------------
-GET STUDENTS
-/api/users/students
-------------------- */
+// =========================
+// GET TEACHERS ONLY
+// =========================
+router.get("/teachers", async(req,res)=>{
 
-router.get(
+ try{
 
-"/students",
+   const teachers =
+   await User.find({
+      role:"teacher"
+   })
+   .select("-password");
 
-async(req,res)=>{
+   res.json(teachers);
 
-try{
+ }
 
-const students=
+ catch(err){
 
-await User.find({
+   res.status(500).json({
+      message:err.message
+   });
 
-role:"student"
+ }
 
-})
+});
 
-.select("-password");
 
 
-res.json(
-students
-);
-
-}
-
-catch(err){
-
-res.status(500)
-.json(err);
-
-}
-
-}
-
-);
-
-
-
-
-
-/* -------------------
-GET TEACHERS
-/api/users/teachers
-------------------- */
-
-router.get(
-
-"/teachers",
-
-async(req,res)=>{
-
-try{
-
-const teachers=
-
-await User.find({
-
-role:"teacher"
-
-})
-
-.select("-password");
-
-
-res.json(
-teachers
-);
-
-}
-
-catch(err){
-
-res.status(500)
-.json(err);
-
-}
-
-}
-
-);
-
-
-
-
-
-module.exports =
-router;
+module.exports = router;
