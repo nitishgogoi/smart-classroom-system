@@ -154,28 +154,25 @@ nav("/");
 
 
 
-const totalAttendance=
-
-attendance.length
-
-?
-
+const totalPresent =
 attendance.reduce(
-
 (sum,a)=>
-
-sum+a.percent,
-
+sum + Number(a.present),
 0
+);
 
-)
+const totalClasses =
+attendance.reduce(
+(sum,a)=>
+sum + Number(a.total),
+0
+);
 
-/
-
-attendance.length
-
+const totalAttendance =
+totalClasses > 0
+?
+(totalPresent/totalClasses)*100
 :
-
 0;
 
 
@@ -705,9 +702,11 @@ Present:
 
 
 <p>
-
-{a.percent}%
-
+{
+Math.round(
+(a.present/a.total)*100
+)
+}%
 </p>
 
 
@@ -732,19 +731,18 @@ rounded
 style={{
 
 width:
-
-`${a.percent}%`,
+`${Math.round(
+(a.present/a.total)*100
+)}%`,
 
 background:
 
-a.percent<75
-
+(
+(a.present/a.total)*100
+)<75
 ?
-
 "red"
-
 :
-
 "green"
 
 }}
