@@ -61,9 +61,9 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-indigo-200 to-indigo-400"
+          className="text-5xl md:text-7xl font-extrabold tracking-tight mb-6 text-white drop-shadow-md"
         >
-          The Future of <br className="hidden md:block"/> Classroom Management
+          The Future of <br className="hidden md:block"/> <span className="text-indigo-400">Classroom Management</span>
         </motion.h1>
 
         <motion.p 
