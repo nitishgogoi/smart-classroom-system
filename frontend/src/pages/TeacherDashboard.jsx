@@ -8,44 +8,54 @@ const [teacher,setTeacher]=useState(null);
 
 useEffect(()=>{
 
+async function load(){
+
+try{
+
 const email =
 localStorage.getItem("email");
 
-axios.get(
+const teacherRes =
+await axios.get(
 "https://smart-classroom-system-23f9.onrender.com/api/users/teachers"
-)
-.then(res=>{
-
-const t =
-res.data.find(
-x=>x.email===email
 );
 
-setTeacher(t);
+const currentTeacher =
+teacherRes.data.find(
+t=>t.email===email
+);
 
-if(t){
+setTeacher(currentTeacher);
 
-axios.get(
-`https://smart-classroom-system-23f9.onrender.com/api/users/students`
-)
-.then(r=>{
+if(!currentTeacher) return;
 
-const filtered=
-r.data.filter(
+const studentRes =
+await axios.get(
+"https://smart-classroom-system-23f9.onrender.com/api/users/students"
+);
+
+const filtered =
+studentRes.data.filter(
 
 s=>
-s.branch===t.branch &&
-Number(s.semester)===Number(t.semester)
+
+s.branch===currentTeacher.branch &&
+Number(s.semester)===Number(currentTeacher.semester)
 
 );
 
 setStudents(filtered);
 
-});
+}
+catch(err){
+
+console.log(err);
 
 }
 
-});
+}
+
+load();
 
 },[]);
 
@@ -57,14 +67,13 @@ padding:"30px",
 color:"white"
 }}>
 
-<h1>
-Teacher Dashboard
-</h1>
+<h1>Teacher Dashboard</h1>
 
-{teacher && (
+{
 
-<div>
+teacher && (
 
+<>
 <h3>
 Branch:
 {teacher.branch}
@@ -74,94 +83,37 @@ Branch:
 Semester:
 {teacher.semester}
 </h3>
+</>
 
-</div>
+)
 
-)}
-
-<div
-style={{
-display:"grid",
-gridTemplateColumns:
-"repeat(4,1fr)",
-gap:"20px",
-marginTop:"20px"
-}}
->
-
-<button>
-Students
-</button>
-
-<button>
-Assignments
-</button>
-
-<button>
-Attendance
-</button>
-
-<button>
-Notes
-</button>
-
-</div>
+}
 
 
-<h2 style={{
-marginTop:"40px"
-}}>
+<h2>
 Students
 </h2>
 
 
-<table
-style={{
-width:"100%",
-marginTop:"20px",
-background:"#111",
-padding:"10px"
-}}
->
-
-<thead>
-
-<tr>
-
-<th>Name</th>
-<th>Email</th>
-<th>Branch</th>
-<th>Semester</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
 {
 
 students.map(
+
 s=>(
 
-<tr key={s._id}>
+<div key={s._id}>
 
-<td>{s.name}</td>
-<td>{s.email}</td>
-<td>{s.branch}</td>
-<td>{s.semester}</td>
+{s.name}
+-
+{s.email}
 
-</tr>
+</div>
 
 )
 
 )
 
 }
-
-</tbody>
-
-</table>
 
 </div>
 
